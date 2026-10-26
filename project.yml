@@ -37,21 +37,23 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: $(BUNDLE_ID_PREFIX).islandpet
-        INFOPLIST_KEY_CFBundleDisplayName: Острівний персонаж
-        INFOPLIST_KEY_NSSupportsLiveActivities: YES
-        INFOPLIST_KEY_NSSupportsLiveActivitiesFrequentUpdates: YES
-        INFOPLIST_KEY_UIApplicationSceneManifest_Generation: YES
-        INFOPLIST_KEY_UILaunchScreen_Generation: YES
-        INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents: YES
-        ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS: YES
+        TARGETED_DEVICE_FAMILY: '1'
     info:
       path: IslandPet/Info.plist
       properties:
+        CFBundleDisplayName: Острівний персонаж
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         CFBundleURLTypes:
           - CFBundleURLName: islandpet
             CFBundleURLSchemes: [islandpet]
         NSSupportsLiveActivities: true
         NSSupportsLiveActivitiesFrequentUpdates: true
+        UILaunchScreen: {}
+        UISupportedInterfaceOrientations:
+          - UIInterfaceOrientationPortrait
+          - UIInterfaceOrientationPortraitUpsideDown
+          - UIInterfaceOrientationLandscapeLeft
+          - UIInterfaceOrientationLandscapeRight
     entitlements:
       path: IslandPet/IslandPet.entitlements
       properties:
@@ -67,10 +69,12 @@ targets:
     settings:
       base:
         PRODUCT_BUNDLE_IDENTIFIER: $(BUNDLE_ID_PREFIX).islandpet.widget
+        TARGETED_DEVICE_FAMILY: '1'
         SKIP_INSTALL: YES
     info:
       path: IslandPetWidget/Info.plist
       properties:
+        CFBundleVersion: $(CURRENT_PROJECT_VERSION)
         NSExtension:
           NSExtensionPointIdentifier: com.apple.widgetkit-extension
     entitlements:
