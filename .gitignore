@@ -1,0 +1,47 @@
+# Xcode and generated project
+*.xcodeproj/
+*.xcworkspace/
+xcuserdata/
+*.xcuserstate
+*.xcsettings
+DerivedData/
+build/
+*.xcarchive/
+*.ipa
+*.dSYM/
+*.dSYM.zip
+*.app/
+*.appex/
+.build/
+.swiftpm/
+Package.resolved
+
+# macOS and editors
+.DS_Store
+.AppleDouble
+.LSOverride
+*~
+.idea/
+.vscode/
+
+# Credentials, signing, pairing and local configuration
+.env
+.env.*
+!.env.example
+*.p12
+*.p8
+*.cer
+*.pem
+*.key
+*.mobileprovision
+*.mobiledevicepairing
+*.pfx
+*.p7b
+*.p7c
+*.p7m
+*.provisionprofile
+*.entitlements.local
+*.xcconfig.local
+*.secrets*
+**/Secrets.swift
+**/LocalConfig.swift
