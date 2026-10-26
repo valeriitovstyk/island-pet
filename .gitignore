@@ -1,5 +1,9 @@
 # Xcode and generated project
 *.xcodeproj/
+IslandPet/Info.plist
+IslandPet/IslandPet.entitlements
+IslandPetWidget/Info.plist
+IslandPetWidget/IslandPetWidget.entitlements
 *.xcworkspace/
 xcuserdata/
 *.xcuserstate

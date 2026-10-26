@@ -1,0 +1,73 @@
+name: iOS
+
+on:
+  push:
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  secret-scan:
+    runs-on: ubuntu-latest
+    permissions:
+      contents: read
+      pull-requests: read
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+      - uses: gitleaks/gitleaks-action@v2
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+
+  build:
+    if: github.ref == 'refs/heads/main' || github.event_name == 'workflow_dispatch'
+    needs: secret-scan
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: maxim-lobanov/setup-xcode@v1
+        with:
+          xcode-version: latest-stable
+      - name: Generate Xcode project
+        run: |
+          brew install xcodegen
+          xcodegen generate
+      - name: Archive unsigned app
+        run: |
+          xcodebuild archive \
+            -project IslandPet.xcodeproj \
+            -scheme IslandPet \
+            -configuration Release \
+            -destination 'generic/platform=iOS' \
+            -archivePath "$RUNNER_TEMP/IslandPet.xcarchive" \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CURRENT_PROJECT_VERSION="$GITHUB_RUN_NUMBER"
+      - name: Package IPA
+        run: |
+          mkdir -p "$RUNNER_TEMP/package/Payload"
+          ditto "$RUNNER_TEMP/IslandPet.xcarchive/Products/Applications/IslandPet.app" \
+            "$RUNNER_TEMP/package/Payload/IslandPet.app"
+          cd "$RUNNER_TEMP/package"
+          ditto -c -k --sequesterRsrc --keepParent Payload "$RUNNER_TEMP/IslandPet.ipa"
+          test -d "$RUNNER_TEMP/package/Payload/IslandPet.app/PlugIns/IslandPetWidget.appex"
+      - uses: actions/upload-artifact@v4
+        with:
+          name: IslandPet-unsigned
+          path: ${{ runner.temp }}/IslandPet.ipa
+      - name: Publish latest release
+        if: github.ref == 'refs/heads/main'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          if gh release view latest >/dev/null 2>&1; then
+            gh release upload latest "$RUNNER_TEMP/IslandPet.ipa" --clobber
+          else
+            gh release create latest "$RUNNER_TEMP/IslandPet.ipa" \
+              --target "$GITHUB_SHA" \
+              --title 'IslandPet latest' \
+              --notes 'Непідписана збірка для SideStore. Потрібен власний безкоштовний Apple ID для підпису.'
+          fi
