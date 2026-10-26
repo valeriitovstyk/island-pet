@@ -8,7 +8,11 @@ public enum PetStore {
         let prefix = Bundle.main.bundleIdentifier?
             .replacingOccurrences(of: ".islandpet.widget", with: "")
             .replacingOccurrences(of: ".islandpet", with: "") ?? "com.example"
-        return UserDefaults(suiteName: "group.\(prefix).islandpet") ?? .standard
+        let group = "group.\(prefix).islandpet"
+        guard FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: group) != nil else {
+            return .standard
+        }
+        return UserDefaults(suiteName: group) ?? .standard
     }
 
     public static func loadRaw(at date: Date = .now) -> PetAttributes.ContentState {

@@ -14,11 +14,15 @@ public enum PetActivityManager {
     }
 
     public static func refreshOnOpen() async -> PetAttributes.ContentState {
-        let state = PetStore.load()
+        var state = PetStore.load()
+        state.updatedAt = .now
         let activities = Activity<PetAttributes>.activities
-        if let current = activities.first(where: { $0.activityState == .active || $0.activityState == .stale }) {
+        if let current = activities.first(where: { $0.activityState == .active }) {
             await current.update(ActivityContent(state: state, staleDate: state.nextChangeAt))
         } else if PetStore.autoRestart {
+            for stale in activities where stale.activityState == .stale {
+                await stale.end(nil, dismissalPolicy: .immediate)
+            }
             await start(with: state)
         }
         return state
